@@ -1,6 +1,8 @@
 # hotel-bookings-analyzer
 Hotel Bookings Analyzer - A data analysis project about hotel bookings
 
+![Seaborn pairplot containing information about previous cancellations](previous_cancellations_plot.png)
+
 # Classification problem
 
 The goal of the project is to analyze a business problem related to hotel bookings by using the CRISP-DM process.
@@ -20,5 +22,7 @@ The data should be downloaded and placed in the "data" directory, which is insid
 # References
 
 [1] J. Mostipak (Kaggle user), "Hotel booking demand", https://www.kaggle.com/datasets/jessemostipak/hotel-booking-demand, last accessed: 06.08.2025
+
 [2] N. Antonio, A. de Almeida, and L. Nunes, "Hotel booking demand datasets", in Data in Brief, Volume 22, p. 41-49, ISSN 2352-3409, 2019.
+
 [3] "Hotels" dataset, #tidytuesday project, GitHub, https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-02-11/readme.md, last accessed: 06.08.2025
