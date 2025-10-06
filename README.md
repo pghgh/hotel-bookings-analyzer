@@ -1,8 +1,6 @@
 # hotel-bookings-analyzer
 Hotel Bookings Analyzer - A data analysis project about hotel bookings
 
-![Seaborn pairplot containing information about previous cancellations](previous_cancellations_plot.png)
-
 # Classification problem
 
 The goal of the project is to analyze a business problem related to hotel bookings by using the CRISP-DM process.
