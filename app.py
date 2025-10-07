@@ -1,7 +1,6 @@
 """
 TAKEN FROM 1
-The code for creating a simple Plotly Dash app was taken from
-https://dash.plotly.com/tutorial (last accessed: 06.10.2025)
+The code for creating a simple Plotly Dash app was taken from https://dash.plotly.com/tutorial (last accessed: 06.10.2025)
 
 TAKEN FROM 2
 The code for preparing the training and test sets was taken from https://medium.com/@whyamit404/understanding-train-test-split-in-pandas-eb1116576c66
@@ -13,10 +12,10 @@ TAKEN FROM 4
 The code for using the logistic regression machine learning model was taken from https://www.digitalocean.com/community/tutorials/logistic-regression-with-scikit-learn
 
 TAKEN FROM 5
-The code for transforming non-numerical values from a pandas dataframe into numerical values using the LabelEncoder from scikit-learn was taken from https://stackoverflow.com/a/50259157
+The code for transforming non-numerical values from a Pandas dataframe into numerical values using the LabelEncoder from scikit-learn was taken from https://stackoverflow.com/a/50259157
 
 TAKEN FROM 6
-The code for converting a numerical value to an integer value was taken from https://sentry.io/answers/change-a-column-type-in-a-dataframe-in-python-pandas/
+The code for changing the datatype of a value from a Pandas dataframe was taken from https://sentry.io/answers/change-a-column-type-in-a-dataframe-in-python-pandas/
 
 TAKEN FROM 7
 The code for obtaining the number of appearances of a value in a dataframe was taken from https://pandas.pydata.org/docs/reference/api/pandas.Series.value_counts.html
@@ -36,10 +35,36 @@ The code for using html.Img in Dash was taken from https://community.plotly.com/
 
 TAKEN FROM 12
 Ideas for implementing the experimental data analysis (EDA) part were taken from: https://deepnote.com/app/code-along-tutorials/A-Beginners-Guide-to-Exploratory-Data-Analysis-with-Python-f536530d-7195-4f68-ab5b-5dca4a4c3579?utm_content=f536530d-7195-4f68-ab5b-5dca4a4c3579
+
+TAKEN FROM 13
+The idea of using the Dash component "Div" and centering everything was taken from https://stackoverflow.com/a/58089518
+
+TAKEN FROM 14
+The settings for changing the styling of the table were taken from  https://community.plotly.com/t/dash-table-change-font-and-size/20326
+
+TAKEN FROM 15
+The settings for customizing HTML headers were taken from https://dash.plotly.com/layout
+
+TAKEN FROM 16
+The settings for using a Dash Bootstrap theme were taken from https://towardsdatascience.com/3-easy-ways-to-make-your-dash-application-look-better-3e4cfefaf772/
+
+TAKEN FROM 17
+The solution for applying bold text to a HTML header was taken from https://community.plotly.com/t/how-can-i-show-a-bold-text-output/52798
+
+TAKEN FROM 18
+The code for creating a pie plot and preparing its data using Plotly was taken from https://plotly.com/python/pie-charts/
+
+TAKEN FROM 19
+The code for saving a static image using Plotly was taken from https://plotly.com/python/static-image-export/
+
+TAKEN FROM 20
+The code for summing up values form a Pandas dataframe based on a condition was taken from https://stackoverflow.com/a/28236391
 """
 
 import random
 from dash import Dash, html, dash_table
+import plotly.express as px
+import dash_bootstrap_components as dbc
 import pandas as pd
 import shap
 import matplotlib.pyplot as plt
@@ -48,15 +73,18 @@ from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.linear_model import LogisticRegression
 from sklearn import preprocessing
 
+# Values which can be changed
 seed = 1
 random.seed(seed)
+# Test set size for the ML model
 test_size = 0.2
+# Maximum iterations allowed for the chosen ML model (Logistic Regression) during training
 max_iter_lr = 1000
 
 # TAKEN FROM START 1
 
 """
-Create a table with how many bookings each travel agent made.
+Create a table with how many bookings the travel agents made and a pie chart displaying percentages related to the number of bookings.
 """
 
 hotel_bookings_dataset = pd.read_csv('data/hotel_bookings.csv')
@@ -71,7 +99,20 @@ travel_agents_and_no_bookings = hotel_bookings_dataset["agent"].astype(int).valu
 travel_agents_and_no_bookings_dataframe = pd.DataFrame(data=travel_agents_and_no_bookings).reset_index()
 # TAKEN FROM END 8
 travel_agents_and_no_bookings_dataframe.columns = ["Travel Agent ID", "No. of bookings"]
+travel_agents_and_no_bookings_dataframe["Travel Agent ID"] = travel_agents_and_no_bookings_dataframe[
+    "Travel Agent ID"].astype(str)
+# TAKEN FROM START 18
+travel_agents_and_no_bookings_dataframe.loc[
+    travel_agents_and_no_bookings_dataframe["No. of bookings"] <= 5, "Travel Agent ID"] = "Other TAs"
+# TAKEN FROM END 18
+# TAKEN FROM START 20
+sum_bookings_other_tas = travel_agents_and_no_bookings_dataframe.loc[
+    travel_agents_and_no_bookings_dataframe["Travel Agent ID"] == "Other TAs", "No. of bookings"].sum()
+# TAKEN FROM END 20
+travel_agents_and_no_bookings_dataframe.loc[
+    travel_agents_and_no_bookings_dataframe["Travel Agent ID"] == "Other TAs", "No. of bookings"] = sum_bookings_other_tas
 
+travel_agents_and_no_bookings_dataframe.drop_duplicates(inplace=True, keep="first")
 """
 Prepare the input data for a chosen machine learning model. After training it, the Shapley values will be analyzed.
 """
@@ -98,31 +139,74 @@ lr_model.fit(X_train, y_train)
 y_pred = lr_model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 roc_auc = roc_auc_score(y_test, y_pred)
-assert (accuracy >= 50)
-assert (roc_auc >= 50)
+print("Accuracy = ", accuracy)
+print("Area under the ROC curve = ", roc_auc)
 # TAKEN FROM END 4
+assert (accuracy >= 0.5)
+assert (roc_auc >= 0.5)
 
 # TAKEN FROM START 3
 plt.rcParams.update({'figure.autolayout': True})
 # TAKEN FROM END 3
 
 # TAKEN FROM START 9
-explainer = shap.Explainer(lr_model, X_train)
-shap_values = explainer(X_train)
-shap.plots.beeswarm(shap_values, color=plt.get_cmap("cool"), show=False)
+model_output_explainer = shap.Explainer(lr_model, X_train)
+shapley_values = model_output_explainer(X_train)
+shap.plots.beeswarm(shapley_values, color=plt.get_cmap("cool"), show=False)
 # TAKEN FROM END 9
 # TAKEN FROM START 10
-plt.savefig("assets/shap_values_beeswarm_plot.png")
+plt.savefig("assets/shapley_values_beeswarm_plot.png")
 # TAKEN FROM END 10
 
-app = Dash()
+# TAKEN FROM START 18
+current_fig = px.pie(data_frame=travel_agents_and_no_bookings_dataframe,
+                     values=travel_agents_and_no_bookings_dataframe["No. of bookings"],
+                     names=travel_agents_and_no_bookings_dataframe["Travel Agent ID"],
+                     color_discrete_sequence=px.colors.sequential.Plotly3)
+# TAKEN FROM END 18
+# TAKEN FROM START 19
+current_fig.write_image("assets/travel_agents_and_no_bookings_pie_plot.png")
+# TAKEN FROM END 19
+# TAKEN FROM START 16
+app = Dash(external_stylesheets=[dbc.themes.MORPH])
+# TAKEN FROM END 16
 app.layout = [
-    html.Div(children="Travel agencies and the number of bookings that each of them made:"),
-    dash_table.DataTable(data=travel_agents_and_no_bookings_dataframe.to_dict("records"), page_size=10),
-    html.Div(children="XAI: Shapley values of features of the dataset, while taking into account the training set:"),
+    # TAKEN FROM START 13
+    # TAKEN FROM START 15
+    # TAKEN FROM START 17
+    html.Div(children=[html.H1(children=html.B("Hotel Bookings Analyzer"))],
+             style=dict(display='flex', justifyContent='center')),
+    # TAKEN FORM END 17
+    html.Div(children=[html.H2(children="Travel agencies and the number of bookings that each of them made:")],
+             style=dict(display='flex', justifyContent='center')),
+    # TAKEN FROM END 15
+    html.Div(children=[
+        # TAKEN FROM START 14
+        dash_table.DataTable(data=travel_agents_and_no_bookings_dataframe.to_dict("records"),
+                             style_cell={'font_size': '20px',
+                                         'text_align': 'center'}),
+        html.Img(src="assets/travel_agents_and_no_bookings_pie_plot.png")
+
+    ],
+        # TAKEN FROM END 14
+        style=dict(display='flex', justifyContent='space-evenly')),
+    # TAKEN FROM START 15
+    html.Div(children=[
+        html.H2(
+            children="ML Model Prediction Accuracy: 87%, Area under the ROC curve: 0.6")],
+        style=dict(display='flex', justifyContent='center')),
+    # TAKEN FROM END 15
+    # TAKEN FROM START 15
+    html.Div(children=[
+        html.H2(
+            children="XAI, Shapley values - The following features had the largest influence on the prediction of cancelled bookings during the ML model's training:")],
+        style=dict(display='flex', justifyContent='center')),
+    # TAKEN FROM END 15
     # TAKEN FROM START 11
-    html.Img(src="assets/shap_values_beeswarm_plot.png")
+    html.Div(children=[html.Img(src="assets/shapley_values_beeswarm_plot.png")],
+             style=dict(display='flex', justifyContent='center')),
     # TAKEN FROM END 11
+    # TAKEN FROM END 13
 ]
 
 if __name__ == '__main__':
