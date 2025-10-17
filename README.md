@@ -27,7 +27,7 @@ The data should be downloaded and placed in the "data" directory, which is insid
 By analyzing the SHAP values, it was observed that features such as the booking lead time ("lead_time") and average daily rate ("adr") have a great influence on the ML model's predictions.
 
 # Technical details
-- By running "app.py", the user can access the dashboard at http://127.0.0.1:8050/
+- By running `python3 app.py`, the user can access the dashboard at http://127.0.0.1:8050/
 - Python version: 3.12
 - The needed dependencies can be found in the "requirements.txt" file, which was generated using the package manager "pip"
 - The usage of a virtual environment is recommended

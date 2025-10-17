@@ -69,6 +69,7 @@ from dash import Dash, html, dash_table, dcc, Input, Output
 import plotly.express as px
 import dash_bootstrap_components as dbc
 import pandas as pd
+import numpy as np
 import shap
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
@@ -79,6 +80,7 @@ from sklearn import preprocessing
 # Values which can be changed
 seed = 1
 random.seed(seed)
+np.random.RandomState(seed)
 # Test set size for the ML model
 test_size = 0.2
 # Maximum iterations allowed for the chosen ML model (Logistic Regression) during training
@@ -138,7 +140,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, r
 # TAKEN FROM END 2
 
 # TAKEN FROM START 4
-lr_model = LogisticRegression(max_iter=max_iter_lr)
+lr_model = LogisticRegression(max_iter=max_iter_lr, random_state=seed)
 lr_model.fit(X_train, y_train)
 y_pred = lr_model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
