@@ -1,5 +1,5 @@
 # hotel-bookings-analyzer
-Hotel Bookings Analyzer - A data analysis project about hotel bookings
+**Hotel Bookings Analyzer** - a data analysis project about hotel bookings
 
 ![UI screenshot](hotel-bookings-analyzer-ui-ss.png)
 
@@ -11,8 +11,8 @@ The goal of the project is to analyze business problems related to hotel booking
 &rarr; By identifying which TAs bring in several bookings, the properties/hotels could make better negotiations with them.
 2. Which bookings might be cancelled by the guests? Also, which factors influence this prediction?
 &rarr; One important classification problem to be solved is to recognize when a booking will be cancelled. This could prevent customer churn and provide a better experience for the guests.
-Therefore, a machine learning model is used for this task. By identifying guests who might cancel bookings, solutions such as offering flexible rebooking options could be employed [4].
-Furthermore, we are also interested in which features have the biggest impact on the model's output.
+Therefore, a machine learning model, namely logistic regression, is used for this classification task. By identifying guests who might cancel bookings, solutions such as offering flexible rebooking options could be employed [4].
+Furthermore, we are also interested in which features have the biggest impact on the model's output. For this purpose, SHAP values will be analyzed.
 
 
 # Dataset
@@ -23,10 +23,11 @@ The data should be downloaded and placed in the "data" directory, which is insid
 # Analysis results
 
 1. Approximately 61% of the bookings are made by three TAs.
-2. Features such as the booking lead time ("lead_time") and average daily rate ("adr") have a great influence on the ML model's predictions.
+2. The ML model's prediction accuracy is 87%, and the value of the area under the ROC curve is 0.6. 
+By analyzing the SHAP values, it was observed that features such as the booking lead time ("lead_time") and average daily rate ("adr") have a great influence on the ML model's predictions.
 
 # Technical details
-- By running "app.py", the user can access the dashboard
+- By running "app.py", the user can access the dashboard at http://127.0.0.1:8050/
 - Python version: 3.12
 - The needed dependencies can be found in the "requirements.txt" file, which was generated using the package manager "pip"
 - The usage of a virtual environment is recommended
