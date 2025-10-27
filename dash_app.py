@@ -52,7 +52,7 @@ TAKEN FROM 17
 The solution for applying bold text to a HTML header was taken from https://community.plotly.com/t/how-can-i-show-a-bold-text-output/52798
 
 TAKEN FROM 18
-The code for creating a pie plot and preparing its data using Plotly was taken from https://plotly.com/python/pie-charts/
+The code for creating a bar plot and preparing its data using Plotly was taken from https://plotly.com/python/bar-charts/
 
 TAKEN FROM 19
 The code for saving a static image using Plotly was taken from https://plotly.com/python/static-image-export/
@@ -89,7 +89,7 @@ max_iter_lr = 1000
 # TAKEN FROM START 1
 
 """
-Create a table with how many bookings the travel agents made and a pie chart displaying percentages related to the number of bookings.
+Create a table with how many bookings the travel agents made and a bar chart displaying the number of bookings made with each TA
 """
 
 hotel_bookings_dataset = pd.read_csv("data/hotel_bookings.csv")
@@ -165,13 +165,13 @@ plt.savefig("assets/shap_values_beeswarm_plot.png")
 # TAKEN FROM END 10
 
 # TAKEN FROM START 18
-current_fig = px.pie(data_frame=travel_agents_and_no_bookings_dataframe,
-                     values=travel_agents_and_no_bookings_dataframe["No. of bookings"],
-                     names=travel_agents_and_no_bookings_dataframe["Travel Agent ID"],
+current_fig = px.bar(data_frame=travel_agents_and_no_bookings_dataframe,
+                     y=travel_agents_and_no_bookings_dataframe["No. of bookings"],
+                     x=travel_agents_and_no_bookings_dataframe["Travel Agent ID"],
                      color_discrete_sequence=px.colors.sequential.Plotly3)
 # TAKEN FROM END 18
 # TAKEN FROM START 19
-current_fig.write_image("assets/travel_agents_and_no_bookings_pie_plot.png")
+current_fig.write_image("assets/travel_agents_and_no_bookings_bar_plot.png")
 # TAKEN FROM END 19
 
 # TAKEN FROM START 21
@@ -227,7 +227,7 @@ content_statistics_bookings = html.Div([
     dash_table.DataTable(data=travel_agents_and_no_bookings_dataframe.to_dict("records"),
                          style_cell={"font_size": "20px",
                                      "text_align": "center"}),
-    html.Div(children=[html.Img(src="assets/travel_agents_and_no_bookings_pie_plot.png", style={"height":"50%", "width":"50%"})],
+    html.Div(children=[html.Img(src="assets/travel_agents_and_no_bookings_bar_plot.png", style={"height":"50%", "width":"50%"})],
              style=dict(display="flex", justifyContent="center")),
         # TAKEN FROM END 14
 
