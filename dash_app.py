@@ -52,7 +52,7 @@ TAKEN FROM 17
 The solution for applying bold text to a HTML header was taken from https://community.plotly.com/t/how-can-i-show-a-bold-text-output/52798
 
 TAKEN FROM 18
-The code for creating a bar plot and preparing its data using Plotly was taken from https://plotly.com/python/bar-charts/
+The code for creating a pie plot and preparing its data using Plotly was taken from https://plotly.com/python/pie-charts/
 
 TAKEN FROM 19
 The code for saving a static image using Plotly was taken from https://plotly.com/python/static-image-export/
@@ -62,6 +62,15 @@ The code for summing up values form a Pandas dataframe based on a condition was 
 
 TAKEN FROM 21
 The code for creating a sidebar using Bootstrap for Dash apps was taken from https://www.dash-bootstrap-components.com/examples/simple-sidebar/
+
+TAKEN FROM 22
+The code for using a grid for the website layout was taken from https://www.dash-bootstrap-components.com/docs/components/layout/
+
+TAKEN FROM 23
+The code for creating a bar plot and preparing its data using Plotly was taken from https://plotly.com/python/bar-charts/
+
+TAKEN FROM 24
+The code for using Boolean conditions in single code line for pandas dataframes was taken from https://stackoverflow.com/a/27360130
 """
 
 import random
@@ -89,7 +98,7 @@ max_iter_lr = 1000
 # TAKEN FROM START 1
 
 """
-Create a table with how many bookings the travel agents made and a bar chart displaying the number of bookings made with each TA
+Create a table with how many bookings the travel agents made and a pie chart displaying the number of bookings made with each TA
 """
 
 hotel_bookings_dataset = pd.read_csv("data/hotel_bookings.csv")
@@ -145,7 +154,7 @@ lr_model.fit(X_train, y_train)
 y_pred = lr_model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 roc_auc = roc_auc_score(y_test, y_pred)
-print("Accuracy = ", accuracy)
+print("Prediction accuracy = ", accuracy)
 print("Area under the ROC curve = ", roc_auc)
 # TAKEN FROM END 4
 assert (accuracy >= 0.5)
@@ -161,17 +170,41 @@ shap_values = model_output_explainer(X_train)
 shap.plots.beeswarm(shap_values, color=plt.get_cmap("cool"), show=False)
 # TAKEN FROM END 9
 # TAKEN FROM START 10
+plt.title("Explainable AI (XAI): SHAP values")
 plt.savefig("assets/shap_values_beeswarm_plot.png")
 # TAKEN FROM END 10
 
 # TAKEN FROM START 18
-current_fig = px.bar(data_frame=travel_agents_and_no_bookings_dataframe,
-                     y=travel_agents_and_no_bookings_dataframe["No. of bookings"],
-                     x=travel_agents_and_no_bookings_dataframe["Travel Agent ID"],
+current_fig = px.pie(data_frame=travel_agents_and_no_bookings_dataframe,
+                     values=travel_agents_and_no_bookings_dataframe["No. of bookings"],
+                     names=travel_agents_and_no_bookings_dataframe["Travel Agent ID"],
                      color_discrete_sequence=px.colors.sequential.Plotly3)
 # TAKEN FROM END 18
 # TAKEN FROM START 19
-current_fig.write_image("assets/travel_agents_and_no_bookings_bar_plot.png")
+current_fig.write_image("assets/travel_agents_and_no_bookings_pie_plot.png")
+# TAKEN FROM END 19
+
+# TAKEN FROM START 6, 7
+no_bookings_per_month = hotel_bookings_dataset["arrival_date_month"].astype(int).value_counts()
+# TAKEN FROM END 6, 7
+# TAKEN FROM START 8
+no_bookings_per_month_dataframe = pd.DataFrame(data=no_bookings_per_month).reset_index()
+# TAKEN FROM END 8
+no_bookings_per_month_dataframe.columns = ["Month", "No. of bookings"]
+no_bookings_per_month_dataframe["Month"] = no_bookings_per_month_dataframe[
+    "Month"].astype(str)
+# TAKEN FROM START 24
+no_bookings_per_month_dataframe = no_bookings_per_month_dataframe.drop(
+    no_bookings_per_month_dataframe[no_bookings_per_month_dataframe["Month"] == "0"].index)
+# TAKEN FROM END 24
+# TAKEN FROM START 23
+current_fig = px.bar(data_frame=no_bookings_per_month_dataframe,
+                     y=no_bookings_per_month_dataframe["No. of bookings"],
+                     x=no_bookings_per_month_dataframe["Month"],
+                     color_discrete_sequence=px.colors.sequential.Plotly3)
+# TAKEN FROM END 23
+# TAKEN FROM START 19
+current_fig.write_image("assets/no_bookings_per_month_bar_plot.png")
 # TAKEN FROM END 19
 
 # TAKEN FROM START 21
@@ -218,23 +251,32 @@ content_statistics_bookings = html.Div([
     # TAKEN FROM START 13
     # TAKEN FROM START 15
     # TAKEN FROM START 17
+
     html.Div(children=[html.H1(children=html.B("Statistics about hotel bookings"))],
              style=dict(display="flex", justifyContent="center")),
     # TAKEN FORM END 17
-    html.Div(children=[html.H2(children="Travel agencies and the number of bookings that each one of them made:")],
-             style=dict(display="flex", justifyContent="center")),
     # TAKEN FROM END 15
-    dash_table.DataTable(data=travel_agents_and_no_bookings_dataframe.to_dict("records"),
-                         style_cell={"font_size": "20px",
-                                     "text_align": "center"}),
-    html.Div(children=[html.Img(src="assets/travel_agents_and_no_bookings_bar_plot.png", style={"height":"50%", "width":"50%"})],
-             style=dict(display="flex", justifyContent="center")),
-        # TAKEN FROM END 14
+    # TAKEN FROM START 22
+    dbc.Row([
+        dbc.Col(
+            html.Div(children=[
+                html.Img(src="assets/no_bookings_per_month_bar_plot.png",
+                         style={"height": "70%", "width": "70%"})],
+                style=dict(display="flex", justifyContent="center"))),
+        dbc.Col(
+            html.Div(children=[
+                html.Img(src="assets/travel_agents_and_no_bookings_pie_plot.png",
+                         style={"height": "70%", "width": "70%"})],
+                style=dict(display="flex", justifyContent="center")))
+    ]
+    )
+    # TAKEN FROM END 22
+    # TAKEN FROM END 14
 
 ])
 
 prediction_metrics_dataframe = pd.DataFrame(
-    data={"Metric": ["Accuracy", "Area under the ROC curve"], "Value": [0.87, 0.6]})
+    data={"Metric": ["Prediction accuracy", "Area under the ROC curve"], "Value": [0.87, 0.6]})
 
 content_prediction_metrics = html.Div([
     # TAKEN FROM START 13
@@ -243,21 +285,24 @@ content_prediction_metrics = html.Div([
     html.Div(children=[html.H1(children=html.B("Metrics for booking cancellation predictions"))],
              style=dict(display="flex", justifyContent="center")),
     # TAKEN FORM END 17
-    html.Div(children=[
-        dash_table.DataTable(data=prediction_metrics_dataframe.to_dict("records"),
-                             style_cell={"font_size": "20px",
-                                         "text_align": "center"})]),
-    html.Div(children=[
-        html.H2(
-            children="Explainable AI (XAI): SHAP values - The following features had the largest influence on the prediction of cancelled bookings during the ML model's training:")],
-        style=dict(display="flex", justifyContent="center")),
-    # TAKEN FROM END 15
-    # TAKEN FROM START 11
-    html.Div(children=[html.Img(src="assets/shap_values_beeswarm_plot.png")],
-             style=dict(display="flex", justifyContent="center")),
+    # TAKEN FROM START 22
+    dbc.Row([
+        dbc.Col(
+            html.Div(children=[
+                dash_table.DataTable(data=prediction_metrics_dataframe.to_dict("records"),
+                                     style_cell={"font_size": "20px",
+                                                 "text_align": "center"})])),
+        # TAKEN FROM END 15
+        # TAKEN FROM START 11
+        dbc.Col(
+            html.Div(children=[html.Img(src="assets/shap_values_beeswarm_plot.png")],
+                     style=dict(display="flex", justifyContent="center"))),
+    ])
+    # TAKEN FROM END 22
     # TAKEN FROM END 11
     # TAKEN FROM END 13
 ])
+
 
 # TAKEN FROM START 21
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
@@ -275,6 +320,7 @@ def render_page_content(pathname):
         ],
         className="p-3 bg-light rounded-3",
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8050)
