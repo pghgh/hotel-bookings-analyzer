@@ -117,15 +117,15 @@ travel_agents_and_no_bookings_dataframe["Travel Agent ID"] = travel_agents_and_n
     "Travel Agent ID"].astype(str)
 # TAKEN FROM START 18
 travel_agents_and_no_bookings_dataframe.loc[
-    travel_agents_and_no_bookings_dataframe["No. of bookings"] <= 5, "Travel Agent ID"] = "Other TAs"
+    travel_agents_and_no_bookings_dataframe["No. of bookings"] <= 10, "Travel Agent ID"] = "Other TAs combined"
 # TAKEN FROM END 18
 # TAKEN FROM START 20
 sum_bookings_other_tas = travel_agents_and_no_bookings_dataframe.loc[
-    travel_agents_and_no_bookings_dataframe["Travel Agent ID"] == "Other TAs", "No. of bookings"].sum()
+    travel_agents_and_no_bookings_dataframe["Travel Agent ID"] == "Other TAs combined", "No. of bookings"].sum()
 # TAKEN FROM END 20
 travel_agents_and_no_bookings_dataframe.loc[
     travel_agents_and_no_bookings_dataframe[
-        "Travel Agent ID"] == "Other TAs", "No. of bookings"] = sum_bookings_other_tas
+        "Travel Agent ID"] == "Other TAs combined", "No. of bookings"] = sum_bookings_other_tas
 
 travel_agents_and_no_bookings_dataframe.drop_duplicates(inplace=True, keep="first")
 """
@@ -178,9 +178,10 @@ plt.savefig("assets/shap_values_beeswarm_plot.png")
 current_fig = px.pie(data_frame=travel_agents_and_no_bookings_dataframe,
                      values=travel_agents_and_no_bookings_dataframe["No. of bookings"],
                      names=travel_agents_and_no_bookings_dataframe["Travel Agent ID"],
-                     color_discrete_sequence=px.colors.sequential.Plotly3)
+                     title="Travel Agent (TA) IDs and percentages of bookings made with their help")
 # TAKEN FROM END 18
 # TAKEN FROM START 19
+current_fig
 current_fig.write_image("assets/travel_agents_and_no_bookings_pie_plot.png")
 # TAKEN FROM END 19
 
@@ -201,7 +202,7 @@ no_bookings_per_month_dataframe = no_bookings_per_month_dataframe.drop(
 current_fig = px.bar(data_frame=no_bookings_per_month_dataframe,
                      y=no_bookings_per_month_dataframe["No. of bookings"],
                      x=no_bookings_per_month_dataframe["Month"],
-                     color_discrete_sequence=px.colors.sequential.Plotly3)
+                     title="Number of bookings per month")
 # TAKEN FROM END 23
 # TAKEN FROM START 19
 current_fig.write_image("assets/no_bookings_per_month_bar_plot.png")
