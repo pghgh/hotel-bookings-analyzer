@@ -165,7 +165,7 @@ plt.rcParams.update({"figure.autolayout": True})
 # TAKEN FROM END 3
 
 # TAKEN FROM START 9
-model_output_explainer = shap.Explainer(lr_model, X_train)
+model_output_explainer = shap.Explainer(lr_model, X_train, seed=seed)
 shap_values = model_output_explainer(X_train)
 shap.plots.beeswarm(shap_values, color=plt.get_cmap("cool"), show=False)
 # TAKEN FROM END 9
@@ -181,7 +181,6 @@ current_fig = px.pie(data_frame=travel_agents_and_no_bookings_dataframe,
                      title="Travel Agent (TA) IDs and percentages of bookings made with their help")
 # TAKEN FROM END 18
 # TAKEN FROM START 19
-current_fig
 current_fig.write_image("assets/travel_agents_and_no_bookings_pie_plot.png")
 # TAKEN FROM END 19
 
